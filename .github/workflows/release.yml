@@ -142,36 +142,12 @@ jobs:
           EOF
 
       - name: Create or update GitHub release
-        env:
-          GH_TOKEN: ${{ github.token }}
-          TAG: ${{ needs.prepare.outputs.tag }}
-          VERSION: ${{ needs.prepare.outputs.version }}
-          TARGET_SHA: ${{ needs.prepare.outputs.target }}
-          PRERELEASE: ${{ needs.prepare.outputs.prerelease }}
-        run: |
-          set -euo pipefail
-          TITLE="AutoTap ${VERSION}"
-
-          if gh release view "$TAG" >/dev/null 2>&1; then
-            if [[ "$PRERELEASE" == "true" ]]; then
-              gh release edit "$TAG" --title "$TITLE" --notes-file release-notes.md --prerelease
-            else
-              gh release edit "$TAG" --title "$TITLE" --notes-file release-notes.md --latest
-            fi
-          else
-            if [[ "$PRERELEASE" == "true" ]]; then
-              gh release create "$TAG" \
-                --target "$TARGET_SHA" \
-                --title "$TITLE" \
-                --notes-file release-notes.md \
-                --prerelease
-            else
-              gh release create "$TAG" \
-                --target "$TARGET_SHA" \
-                --title "$TITLE" \
-                --notes-file release-notes.md \
-                --latest
-            fi
-          fi
-
-          gh release upload "$TAG" release-assets/* --clobber
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ needs.prepare.outputs.tag }}
+          name: AutoTap ${{ needs.prepare.outputs.version }}
+          body_path: release-notes.md
+          files: |
+            release-assets/*
+          fail_on_unmatched_files: true
+          prerelease: ${{ needs.prepare.outputs.prerelease == 'true' }}
