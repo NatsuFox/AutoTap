@@ -128,17 +128,17 @@ jobs:
 
           ### Downloads
 
-          - `*-macos-arm64.zip`: packaged app for Apple Silicon Macs
-          - `*-macos-x86_64.zip`: packaged app for Intel Macs
-          - `*-binary.tar.gz`: raw standalone executable for advanced use
-          - `*.sha256`: checksums for archive verification
+          - \`*-macos-arm64.zip\`: packaged app for Apple Silicon Macs
+          - \`*-macos-x86_64.zip\`: packaged app for Intel Macs
+          - \`*-binary.tar.gz\`: raw standalone executable for advanced use
+          - \`*.sha256\`: checksums for archive verification
 
           ### Install
 
           1. Download the archive that matches your Mac.
           2. Unzip it.
-          3. Move `AutoTap.app` into `/Applications`.
-          4. On first launch, macOS may warn because the app is unsigned. If that happens, right-click the app and choose `Open`.
+          3. Move \`AutoTap.app\` into \`/Applications\`.
+          4. On first launch, macOS may warn because the app is unsigned. If that happens, right-click the app and choose \`Open\`.
           EOF
 
       - name: Create or update GitHub release
