@@ -26,8 +26,7 @@ Builds a distributable macOS release artifact for AutoTap.
 The script creates:
   1. A macOS .app bundle
   2. A zipped .app artifact suitable for GitHub Releases
-  3. A tar.gz archive containing the raw executable for advanced users
-  4. SHA-256 checksum files for both archives
+  3. A SHA-256 checksum file for the archive
 
 Options:
   --debug                     Build a debug artifact instead of release
@@ -50,7 +49,6 @@ Environment overrides:
 
 Output:
   dist/<app-name>-<version>-macos-<arch>.zip
-  dist/<app-name>-<version>-macos-<arch>-binary.tar.gz
 EOF
 }
 
@@ -174,19 +172,14 @@ app_bundle_dir="${staging_root}/${app_name}.app"
 contents_dir="${app_bundle_dir}/Contents"
 macos_dir="${contents_dir}/MacOS"
 resources_dir="${contents_dir}/Resources"
-raw_binary_dir="${staging_root}/raw-binary"
 zip_path="${dist_root}/${artifact_slug}.zip"
 zip_sha_path="${zip_path}.sha256"
-raw_tar_path="${dist_root}/${artifact_slug}-binary.tar.gz"
-raw_tar_sha_path="${raw_tar_path}.sha256"
 
 rm -rf "${staging_root}"
-mkdir -p "${macos_dir}" "${resources_dir}" "${raw_binary_dir}" "${dist_root}"
+mkdir -p "${macos_dir}" "${resources_dir}" "${dist_root}"
 
 cp "${AUTOTAP_BINARY_PATH}" "${macos_dir}/${app_name}"
 chmod 755 "${macos_dir}/${app_name}"
-cp "${AUTOTAP_BINARY_PATH}" "${raw_binary_dir}/${app_name}"
-chmod 755 "${raw_binary_dir}/${app_name}"
 
 icon_file_name=""
 if [[ -n "$icon_path" ]]; then
@@ -200,15 +193,14 @@ printf 'APPL????' > "${contents_dir}/PkgInfo"
 if [[ -n "$codesign_identity" ]]; then
   codesign --force --deep --options runtime --timestamp --sign "$codesign_identity" "${app_bundle_dir}"
 else
-  echo "[AutoTap] warning: release bundle is unsigned. macOS Gatekeeper may require right-click > Open on first launch." >&2
+  echo "[AutoTap] warning: release bundle is unsigned and not notarized. macOS will likely show an 'Apple could not verify' warning on first launch." >&2
+  echo "[AutoTap] warning: to avoid the Gatekeeper warning, ship a Developer ID signed and notarized app bundle." >&2
 fi
 
-rm -f "${zip_path}" "${zip_sha_path}" "${raw_tar_path}" "${raw_tar_sha_path}"
+rm -f "${zip_path}" "${zip_sha_path}"
 
 ditto -c -k --sequesterRsrc --keepParent "${app_bundle_dir}" "${zip_path}"
-tar -C "${raw_binary_dir}" -czf "${raw_tar_path}" "${app_name}"
 shasum -a 256 "${zip_path}" > "${zip_sha_path}"
-shasum -a 256 "${raw_tar_path}" > "${raw_tar_sha_path}"
 
 cat <<EOF
 Release artifacts created.
@@ -220,8 +212,6 @@ Executable: ${AUTOTAP_BINARY_PATH}
 App bundle: ${app_bundle_dir}
 ZIP artifact: ${zip_path}
 ZIP checksum: ${zip_sha_path}
-Raw binary archive: ${raw_tar_path}
-Raw binary checksum: ${raw_tar_sha_path}
 $(if [[ -n "$build_log" ]]; then printf 'Build log: %s
 ' "$build_log"; fi)
 EOF

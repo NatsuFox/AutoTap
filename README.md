@@ -31,7 +31,6 @@ Choose the archive that matches your Mac:
 
 - `autotap-<version>-macos-arm64.zip` for Apple Silicon
 - `autotap-<version>-macos-x86_64.zip` for Intel Macs
-- `*-binary.tar.gz` if you want the raw executable instead of the `.app` bundle
 - `*.sha256` if you want to verify the downloaded archive
 
 Install steps:
@@ -41,7 +40,9 @@ Install steps:
 3. Move `AutoTap.app` into `/Applications`.
 4. Launch the app.
 
-Current releases are unsigned. On first launch, macOS Gatekeeper may warn about the app. If that happens, right-click `AutoTap.app`, choose `Open`, and confirm the prompt.
+Current releases are shipped as zipped `.app` bundles. They are not notarized yet, so macOS Gatekeeper may still warn that Apple could not verify the app. If that happens, right-click `AutoTap.app`, choose `Open`, and confirm the prompt.
+
+To remove that warning completely in future releases, the app needs to be signed with an Apple Developer ID certificate and notarized by Apple.
 
 ## Run From Source
 
@@ -111,8 +112,6 @@ That pushes a `v0.1.2` tag and triggers the GitHub Actions release workflow, whi
 
 - Apple Silicon `.zip`
 - Intel `.zip`
-- Apple Silicon raw binary archive
-- Intel raw binary archive
 - checksum files for each archive
 
 ## License

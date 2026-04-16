@@ -91,8 +91,6 @@ jobs:
           mkdir -p release-assets
           cp dist/*.zip release-assets/
           cp dist/*.zip.sha256 release-assets/
-          cp dist/*-binary.tar.gz release-assets/
-          cp dist/*-binary.tar.gz.sha256 release-assets/
           ls -la release-assets
 
       - name: Upload build artifacts
@@ -130,7 +128,6 @@ jobs:
 
           - \`*-macos-arm64.zip\`: packaged app for Apple Silicon Macs
           - \`*-macos-x86_64.zip\`: packaged app for Intel Macs
-          - \`*-binary.tar.gz\`: raw standalone executable for advanced use
           - \`*.sha256\`: checksums for archive verification
 
           ### Install
@@ -138,7 +135,7 @@ jobs:
           1. Download the archive that matches your Mac.
           2. Unzip it.
           3. Move \`AutoTap.app\` into \`/Applications\`.
-          4. On first launch, macOS may warn because the app is unsigned. If that happens, right-click the app and choose \`Open\`.
+          4. On first launch, macOS may warn because the app is unsigned and not notarized. If that happens, right-click the app and choose \`Open\`.
           EOF
 
       - name: Create or update GitHub release
